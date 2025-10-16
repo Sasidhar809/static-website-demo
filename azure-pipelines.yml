@@ -2,23 +2,32 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-  displayName: 'Setup Environment (Optional)'
+variables:
+  webAppName: 'my-static-website-demo'
+  resourceGroup: 'StaticWebsiteRG'
 
-- script: |
-    echo "Building simple static website project"
-    mkdir -p output
-    cp -r * output
-  displayName: 'Build static site'
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+    - script: echo "No build needed for static website"
+      displayName: 'Build Step'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'output'
-    ArtifactName: 'drop'
-  displayName: 'Publish build artifacts'
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployJob
+    environment: 'Dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '<YourServiceConnection>'
+              appName: '$(webAppName)'
+              package: '$(System.DefaultWorkingDirectory)'
 
