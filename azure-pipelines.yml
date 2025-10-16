@@ -27,7 +27,7 @@ stages:
           steps:
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: '<YourServiceConnection>'
-              appName: '$(webAppName)'
+              azureSubscription: '<staticweb>'
+              appName: '$(my-static-website-demo)'
               package: '$(System.DefaultWorkingDirectory)'
 
